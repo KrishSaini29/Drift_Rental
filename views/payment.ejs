@@ -1,0 +1,24 @@
+<%- include('partials/userHeader') -%>
+
+    <li class="nav-item">
+        <a class="nav-link" href="<%= newUser %>"><i class="far fa-user"></i>
+        </a>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </nav>
+    <!-- Navbar ends  -->
+
+    <h3>Welcome to Payment Gateway</h3>
+    <form action="payment" method="POST">
+        <script src="//checkout.stripe.com/v2/checkout.js" class="stripe-button" data-key="<%= key %>"
+            data-amount="<%= amount %>" data-currency="inr" data-name="Drift Rental"
+            data-description="Book car of your choice" data-locale="auto">
+            </script>
+    </form>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+
+    <%- include('partials/footer') -%>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Bootstrap CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
@@ -17,33 +18,46 @@
     <link href="/CSS/artwork.css" rel="stylesheet">
 
 </head>
+
 <body>
     <div class="jumbotron-bg">
-    <div class=" p-3 rounded-lg jumbotron" id="jumbotron">
+        <div class=" p-3 rounded-lg jumbotron" id="jumbotron">
 
-        <h2 class="display-4 user-field"><%= user.C_fname %>  <%= user.C_lname %></h2>
-        <hr class="my-4">
-        <div class="container">
-           <h5 class="user-field">Username : <%= user.Customer_id %></h5>
-           <h5 class="user-field">Password : <%= user.Password %></h5>
-           <h5 class="user-field">First Name : <%= user.C_fname %></h5>
-           <h5 class="user-field">Last Name : <%= user.C_lname %></h5>
-           <h5 class="user-field">Aadhar Number : <%= user.Aadhar %></h5>
-           <h5 class="user-field">Address : <%= user.Address %></h5>
-           <h5 class="user-field">Contact : <%= user.Contact %></h5>
-           <h5 class="user-field">Email : <%= user.Email_id %></h5>
+            <h2 class="display-4 user-field">
+                <%= user.C_fname %>
+                    <%= user.C_lname %>
+            </h2>
+            <hr class="my-4">
+            <div class="container">
+                <h5 class="user-field">Username : <%= user.Customer_id %>
+                </h5>
+                <h5 class="user-field">Password : <%= user.Password %>
+                </h5>
+                <h5 class="user-field">First Name : <%= user.C_fname %>
+                </h5>
+                <h5 class="user-field">Last Name : <%= user.C_lname %>
+                </h5>
+                <h5 class="user-field">Aadhar Number : <%= user.Aadhar %>
+                </h5>
+                <h5 class="user-field">Address : <%= user.Address %>
+                </h5>
+                <h5 class="user-field">Contact : <%= user.Contact %>
+                </h5>
+                <h5 class="user-field">Email : <%= user.Email_id %>
+                </h5>
+            </div>
+
+            <hr class="my-4">
+            <form action="/logout" method="POST">
+                <button type="submit" class="success-btn">Logout</button>
+            </form>
+            <form action="/Choose-Car" method="GET">
+                <button type="submit" class="success-btn">Book Another Car</button>
+            </form>
         </div>
-
-        <hr class="my-4">
-        <form action="/logout" method="POST">
-            <button type="submit" class="success-btn">Logout</button>
-        </form> 
-        <form action="/Choose-Car" method="GET">
-            <button type="submit" class="success-btn">Book Another Car</button>
-        </form>
-      </div>
-      </div>
+    </div>
 </body>
+
 </html>
 
-  <%- include('partials/footer') -%>
+<%- include('partials/footer') -%>

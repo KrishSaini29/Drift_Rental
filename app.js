@@ -4,6 +4,10 @@ const lodash = require("lodash");
 const ejs = require("ejs");
 const mysql = require("mysql");
 
+const PUBLISHABLE_KEY = "pk_test_51JnGTaSGBxXYWMcgShxBFlUhdfw5Af8IKZUx6lZB1L32tjxPTrG78y3oszh5B61UBkqliAXJelR1pruXGMoScygR00izARksir"
+const SECERT_KEY = "sk_test_51JnGTaSGBxXYWMcg58vxiBoSkEIdehO7Rkww0XiNoyMaqEEBNC11TldIpkM4nuO1Kru2qI1vsRZ22uHvO2EILsoK004yR6CJqb"
+
+const stripe = require('stripe')(SECERT_KEY)
 const app = express();
 
 app.use(express.static("public"));
@@ -15,10 +19,10 @@ app.set('view engine', 'ejs');
 
 var db_config = {
   host: "remotemysql.com",
-  user: "G46nsVWf7x",
+  user: "TW0TYh9e65",
   port: 3306,
-  database: "G46nsVWf7x",
-  password: "ahtV4JNY96"
+  database: "TW0TYh9e65",
+  password: "6HYRxv7Xj8"
 };
 
 var connection;
@@ -92,7 +96,7 @@ app.get("/rentCar/:carName", function (req, res) {
     if (err) {
       console.log(err);
     } else {
-
+      console.log(findCar[0].Avail_flag);
       if (findCar[0].Avail_flag === 'A') {
         carAvail = "Available";
       } else {
@@ -181,53 +185,122 @@ app.post("/logout", function (req, res) {
   res.redirect("/");
 })
 
+let user_details = {
+  rent_i: 0,
+  from_date: new Date("2021-01-20"),
+  to_date: new Date("2021-01-20"),
+  plate: "",
+  cust_id: "",
+  pick: "",
+  drop: "",
+  interval: "",
+  amt: ""
+};
+
 app.post("/rent", function (req, res) {
 
-  let sql4 = "SELECT Rent_id FROM rent WHERE Rent_id=(SELECT max(Rent_id) FROM rent)";
-  connection.query(sql4, function (err, id) {
+  user_details.from_date = new Date(req.body.fromDate);
+  user_details.to_date = new Date(req.body.returnDate);
+  user_details.plate = req.body.plateNo;
+  user_details.pick = req.body.pickup_id;
+  user_details.drop = req.body.drop_id;
+  user_details.amt = 0;
+
+  let sql = "SELECT * FROM car WHERE Plate_no ='" + user_details.plate + "'";
+  connection.query(sql, function (err, findCar) {
     if (err) {
       console.log(err);
     } else {
-      rentId = id[0].Rent_id + 1;
+      console.log(findCar[0].RentPerday);
+      console.log(user_details.from_date);
+      console.log(user_details.to_date);
+      user_details.interval = (Math.abs(user_details.to_date - user_details.from_date)) / (1000 * 60 * 60 * 24);
+      console.log(user_details.interval);
+      user_details.amt = user_details.interval * findCar[0].RentPerday * 100;
+      console.log(user_details.amt);
+      res.render("payment", {
+        amount: user_details.amt,
+        newUser: newUserUrl,
+        key: PUBLISHABLE_KEY
+      });
     }
   });
-  const userName = newUserUrl.substring(10);
-  console.log(userName);
-  let sql = "SELECT Customer_id FROM customer WHERE Customer_id='" + userName + "' ";
-  connection.query(sql, function (err, found) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(found);
-      if (found === []) {
-        res.redirect("/Register");
-      } else {
-
-        let sql2 = "INSERT INTO rent VALUES('" + rentId + "','" + req.body.fromDate + "','" + req.body.returnDate + "','" + req.body.plateNo + "','" + userName + "','" + req.body.pickup_id + "','" + req.body.drop_id + "')";
-        connection.query(sql2, function (err) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("Booked");
-          }
-        });
-
-        let sql3 = "UPDATE car SET Avail_flag = 'N' WHERE car.Plate_no = '" + req.body.plateNo + "' ";
-        connection.query(sql3, function (err) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("updated car table");
-          }
-        });
-
-        res.render("success");
-
-      }
-    }
-  });
-
 });
+
+app.post("/payment", (req, res) => {
+  stripe.customers.create({
+    email: req.body.stripeEmail,
+    source: req.body.stripeToken,
+    name: 'Gaurav Saini',
+    address: {
+      line1: '510 Townsend St',
+      postal_code: '98140',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'US'
+    }
+  })
+    .then((customer) => {
+      return stripe.charges.create({
+        amount: 7000,
+        description: 'Web Development Project',
+        currency: 'USD',
+        customer: customer.id
+      })
+    })
+    .then((charge) => {
+      // console.log(charge)
+
+      let sql4 = "SELECT Rent_id FROM rent WHERE Rent_id=(SELECT max(Rent_id) FROM rent)";
+      connection.query(sql4, function (err, id) {
+        if (err) {
+          console.log(err);
+        } else {
+          rentId = id[0].Rent_id + 1;
+        }
+      });
+      const userName = newUserUrl.substring(10);
+      console.log(userName);
+      let sql = "SELECT Customer_id FROM customer WHERE Customer_id='" + userName + "' ";
+      connection.query(sql, function (err, found) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(found);
+          if (found === []) {
+            res.redirect("/Register");
+          } else {
+
+            //console.log(req.body.fromDate);
+
+            let sql2 = "INSERT INTO rent VALUES('" + rentId + "','" + user_details.from_date + "','" + user_details.to_date + "','" + user_details.plate + "','" + userName + "','" + user_details.pick + "','" + user_details.drop + "','" + user_details.amt + "')";
+            connection.query(sql2, function (err) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("Booked");
+              }
+            });
+
+            let sql3 = "UPDATE car SET Avail_flag = 'N' WHERE car.Plate_no = '" + user_details.plate + "' ";
+            connection.query(sql3, function (err) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("updated car table");
+              }
+            });
+
+            res.render("success");
+
+          }
+        }
+      })
+    })
+    .catch((err) => {
+      res.send(err)
+    })
+})
 
 // app.post("/signOut", function (req, res) {
 //   res.render("signout", {
@@ -258,6 +331,6 @@ app.post("/issues", function (req, res) {
 
 });
 
-app.listen(process.env.PORT, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log("The server has started successfully!");
 });
