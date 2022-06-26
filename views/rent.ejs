@@ -19,15 +19,15 @@
         </div>
         <div class="col-lg-6 car-details">
           <h2>
-            <%= carDetail.Car_model %>
+            <%= carDetail.model %>
           </h2>
-          <h3>Plate Number : <%= carDetail.Plate_no %>
+          <h3>Plate Number : <%= carDetail.plateNo %>
           </h3>
-          <h3>Car Type : <%= carDetail.Car_type %>
+          <h3>Car Type : <%= carDetail.type %>
           </h3>
-          <h3>Location : <%= locationName %>
+          <h3>Location : <%= location %>
           </h3>
-          <h3>Rent/Day: Rs.<%= carDetail.RentPerday %>
+          <h3>Rent/Day: Rs.<%= carDetail.rentPerDay %>
           </h3>
           <h2>
             <%= avail %>
@@ -47,8 +47,8 @@
             <div class="col-sm-6">
               <label for="pickup">Pickup Location:</label>
               <select class="form-control" name="pickup_id" id="pickup">
-                <option value="<%= carDetail.Location_id %>">
-                  <%= locationName %>
+                <option value=<%= carDetail.location %>>
+                  <%= location %>
                 </option>
               </select>
             </div>
@@ -79,14 +79,14 @@
             </div>
 
             <div class="col-12">
-              <input type="hidden" name="plateNo" value="<%= carDetail.Plate_no %>">
+              <input type="hidden" name="plateNo" value=<%= carDetail.plateNo %>>
             </div>
 
           </div>
 
           <hr class="my-4">
 
-          <% if(carDetail.Avail_flag==='A' ){ %>
+          <% if(avail==="Available"){ %>
             <button class="w-100 btn btn-primary btn-lg" type="submit">Confirm Booking</button>
             <% }else{ %>
               <button class="w-100 btn btn-dark btn-lg" disabled>Car Already On Rent!</button>
